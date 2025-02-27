@@ -16,12 +16,10 @@
             margin: 0;
             overflow: auto;
             color: #e0e0e0;
-            /* Light text for dark mode */
         }
 
         .container {
             background: linear-gradient(145deg, #2c2c2c, #1f1f1f);
-            /* Subtle dark gradient */
             padding: 2rem;
             border-radius: 20px;
             box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3),
@@ -38,7 +36,6 @@
                 transform: translateY(-100px);
                 opacity: 0;
             }
-
             to {
                 transform: translateY(0);
                 opacity: 1;
@@ -92,7 +89,24 @@
 
         input::placeholder {
             color: #a0a0a0;
-            /* Placeholder text color for dark mode */
+        }
+
+        button {
+            padding: 0.75rem 1.5rem;
+            font-size: clamp(0.875rem, 3vw, 1rem);
+            border: none;
+            border-radius: 10px;
+            background: linear-gradient(145deg, #ff6f61, #ff8c7f);
+            color: #fff;
+            cursor: pointer;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2),
+                -5px -5px 15px rgba(255, 255, 255, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        button:hover {
+            background: linear-gradient(145deg, #ff8c7f, #ff6f61);
+            transform: scale(1.05);
         }
 
         .result {
@@ -105,7 +119,6 @@
             margin: 0.625rem 0;
             padding: 0.75rem;
             background: linear-gradient(145deg, #333333, #292929);
-            /* Subtle gradient for result boxes */
             border-radius: 10px;
             box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2),
                 -5px -5px 15px rgba(255, 255, 255, 0.1);
@@ -128,7 +141,6 @@
             border-left: 4px solid #4facfe;
         }
 
-        /* Media Queries for Mobile Responsiveness */
         @media (max-width: 480px) {
             .container {
                 padding: 1.5rem;
@@ -140,7 +152,8 @@
             }
 
             input,
-            select {
+            select,
+            button {
                 width: 100%;
                 max-width: 200px;
             }
@@ -152,45 +165,55 @@
     <div class="container">
         <h1>Office Time Wizard</h1>
         <div class="input-group">
-            <input type="text" id="entryTime" placeholder="e.g., 9:00"
-                onkeypress="if(event.key === 'Enter') calculateLeavingTime()">
-            <select id="period" onchange="calculateLeavingTime()">
+            <input type="text" id="entryTime" placeholder="e.g., 9:00">
+            <select id="period">
                 <option value="AM">AM</option>
                 <option value="PM">PM</option>
             </select>
+            <button onclick="calculateLeavingTime()">Calculate</button>
         </div>
         <div class="result" id="result"></div>
     </div>
 
     <script>
         function calculateLeavingTime() {
-            const entryTime = document.getElementById("entryTime").value;
+            const entryTime = document.getElementById("entryTime").value.trim();
             const period = document.getElementById("period").value;
             const resultDiv = document.getElementById("result");
 
+            // Clear result if input is empty
             if (!entryTime) {
-                resultDiv.innerHTML = "";
+                resultDiv.innerHTML = "Please enter a time.";
                 return;
             }
 
-            const timeRegex = /^([1-9]|1[0-2]):([0-5][0-9])$/;
+            // Validate input format
+            const timeRegex = /^([1-9]|1[0-2])(?::([0-5][0-9]))?$/;
             if (!timeRegex.test(entryTime)) {
-                resultDiv.innerHTML = "Enter a valid time (e.g., 9:00)";
+                resultDiv.innerHTML = "Enter a valid time (e.g., 9:00 or 9)";
                 return;
             }
 
+            // Parse hours and minutes (default minutes to 0 if not provided)
             let [hours, minutes] = entryTime.split(":").map(Number);
+            if (typeof minutes !== "number" || isNaN(minutes)) minutes = 0;
+            hours = Number(hours);
+
+            // Adjust for AM/PM
             if (period === "PM" && hours !== 12) hours += 12;
             if (period === "AM" && hours === 12) hours = 0;
 
+            // Convert to minutes since midnight
             let totalMinutes = hours * 60 + minutes;
 
+            // Calculate leaving times
             const times = [
-                totalMinutes + 8 * 60 + 20,
-                totalMinutes + 8 * 60 + 30,
-                totalMinutes + 8 * 60 + 40
+                totalMinutes + 8 * 60 + 20, // 8 hours 20 mins
+                totalMinutes + 8 * 60 + 30, // 8 hours 30 mins
+                totalMinutes + 8 * 60 + 40  // 8 hours 40 mins
             ];
 
+            // Format the results
             let resultHTML = "";
             times.forEach(time => {
                 let leaveHours = Math.floor(time / 60) % 24;
@@ -203,6 +226,13 @@
 
             resultDiv.innerHTML = resultHTML;
         }
+
+        // Optional: Trigger calculation on Enter key for desktop users
+        document.getElementById("entryTime").addEventListener("keypress", function (event) {
+            if (event.key === "Enter") {
+                calculateLeavingTime();
+            }
+        });
     </script>
 </body>
 
