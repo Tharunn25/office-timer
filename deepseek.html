@@ -3,119 +3,146 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Office Time Calculator</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Office Time Wizard</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #2b2b2b, #3a3a3a, #3a3a3a, #1e1e2f);
             min-height: 100vh;
             display: flex;
             justify-content: center;
             align-items: center;
-            padding: 16px;
+            margin: 0;
+            overflow: auto;
+            color: #e0e0e0;
+            /* Light text for dark mode */
         }
 
         .container {
-            background: rgba(255, 255, 255, 0.95);
-            padding: 1.5rem;
+            background: linear-gradient(145deg, #2c2c2c, #1f1f1f);
+            /* Subtle dark gradient */
+            padding: 2rem;
             border-radius: 20px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-            width: 100%;
-            max-width: 400px;
-            transition: transform 0.3s ease;
+            box-shadow: 10px 10px 30px rgba(0, 0, 0, 0.3),
+                -10px -10px 30px rgba(255, 255, 255, 0.05);
+            text-align: center;
+            width: 90%;
+            max-width: 450px;
+            position: relative;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateY(-100px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
         }
 
         h1 {
-            color: #2d3748;
-            text-align: center;
+            color: #ff6f61;
+            font-size: clamp(1.5rem, 5vw, 1.75rem);
             margin-bottom: 1.5rem;
-            font-size: 1.5rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
         }
 
         .input-group {
-            margin-bottom: 1.5rem;
-            position: relative;
+            display: flex;
+            justify-content: center;
+            gap: 0.625rem;
+            margin-bottom: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        input,
+        select {
+            padding: 0.75rem;
+            font-size: clamp(0.875rem, 3vw, 1rem);
+            border: none;
+            border-radius: 10px;
+            background: #3a3a3a;
+            box-shadow: inset 5px 5px 10px rgba(0, 0, 0, 0.2),
+                inset -5px -5px 10px rgba(255, 255, 255, 0.1);
+            outline: none;
+            transition: all 0.3s ease;
+            color: #e0e0e0;
+        }
+
+        input:focus,
+        select:focus {
+            background: #454545;
+            box-shadow: inset 3px 3px 6px rgba(0, 0, 0, 0.2),
+                inset -3px -3px 6px rgba(255, 255, 255, 0.15);
         }
 
         input {
-            width: 100%;
-            padding: 1rem;
-            border: 2px solid #e2e8f0;
+            width: clamp(100px, 30vw, 120px);
+        }
+
+        select {
+            width: clamp(60px, 20vw, 80px);
+        }
+
+        input::placeholder {
+            color: #a0a0a0;
+            /* Placeholder text color for dark mode */
+        }
+
+        .result {
+            margin-top: 1.25rem;
+            font-size: clamp(0.875rem, 3vw, 1.125rem);
+            color: #e0e0e0;
+        }
+
+        .result div {
+            margin: 0.625rem 0;
+            padding: 0.75rem;
+            background: linear-gradient(145deg, #333333, #292929);
+            /* Subtle gradient for result boxes */
             border-radius: 10px;
-            font-size: 1rem;
-            transition: border-color 0.3s ease;
-            -webkit-appearance: none;
+            box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.2),
+                -5px -5px 15px rgba(255, 255, 255, 0.1);
+            transition: transform 0.2s ease;
         }
 
-        input:focus {
-            outline: none;
-            border-color: #667eea;
+        .result div:hover {
+            transform: scale(1.05);
         }
 
-        .results {
-            margin-top: 1rem;
-            display: none;
+        .result div:nth-child(1) {
+            border-left: 4px solid #ff6f61;
         }
 
-        .result-card {
-            background: white;
-            padding: 1rem;
-            border-radius: 10px;
-            margin: 0.5rem 0;
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            opacity: 0;
-            transform: translateY(20px);
-            animation: slideUp 0.5s ease forwards;
+        .result div:nth-child(2) {
+            border-left: 4px solid #ffb347;
         }
 
-        @keyframes slideUp {
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .result div:nth-child(3) {
+            border-left: 4px solid #4facfe;
         }
 
-        .time-option {
-            color: #4a5568;
-            font-size: 0.85rem;
-            flex: 1;
-        }
-
-        .time-result {
-            color: #2d3748;
-            font-weight: bold;
-            font-size: 1rem;
-            margin-left: 1rem;
-        }
-
+        /* Media Queries for Mobile Responsiveness */
         @media (max-width: 480px) {
             .container {
-                padding: 1rem;
-                border-radius: 16px;
+                padding: 1.5rem;
             }
 
-            h1 {
-                font-size: 1.3rem;
-                margin-bottom: 1rem;
+            .input-group {
+                flex-direction: column;
+                align-items: center;
             }
 
-            input {
-                padding: 0.8rem;
-                font-size: 0.95rem;
-            }
-
-            .result-card {
-                padding: 0.8rem;
+            input,
+            select {
+                width: 100%;
+                max-width: 200px;
             }
         }
     </style>
@@ -123,85 +150,59 @@
 
 <body>
     <div class="container">
-        <h1>Office Time Calculator ⏰</h1>
+        <h1>Office Time Wizard</h1>
         <div class="input-group">
-            <input type="text" id="entryTime" placeholder="e.g., 9:00 AM" autocomplete="off" autocapitalize="none">
+            <input type="text" id="entryTime" placeholder="e.g., 9:00"
+                onkeypress="if(event.key === 'Enter') calculateLeavingTime()">
+            <select id="period" onchange="calculateLeavingTime()">
+                <option value="AM">AM</option>
+                <option value="PM">PM</option>
+            </select>
         </div>
-        <div class="results" id="results">
-            <div class="result-card">
-                <span class="time-option">8h 20m</span>
-                <span class="time-result" id="result1">-</span>
-            </div>
-            <div class="result-card">
-                <span class="time-option">8h 30m</span>
-                <span class="time-result" id="result2">-</span>
-            </div>
-            <div class="result-card">
-                <span class="time-option">8h 40m</span>
-                <span class="time-result" id="result3">-</span>
-            </div>
-        </div>
+        <div class="result" id="result"></div>
     </div>
 
     <script>
-        const entryTime = document.getElementById('entryTime');
-        const results = document.getElementById('results');
-        const regex = /^(1[0-2]|0?[1-9]):([0-5][0-9]) ([APap][mM])$/;
+        function calculateLeavingTime() {
+            const entryTime = document.getElementById("entryTime").value;
+            const period = document.getElementById("period").value;
+            const resultDiv = document.getElementById("result");
 
-        function formatTime(displayHours, minsOut, periodOut) {
-            return `${displayHours}:${minsOut.toString().padStart(2, '0')} ${periodOut}`;
-        }
-
-        function calculateTimes() {
-            const timeString = entryTime.value.trim();
-
-            if (!regex.test(timeString)) {
-                results.style.display = 'none';
+            if (!entryTime) {
+                resultDiv.innerHTML = "";
                 return;
             }
 
-            const [_, hours, minutes, period] = timeString.match(regex);
-            let totalMinutes = parseInt(hours) * 60 + parseInt(minutes);
-
-            // Convert to 24-hour format
-            if (period.toUpperCase() === 'PM' && hours !== '12') {
-                totalMinutes += 12 * 60;
-            }
-            if (period.toUpperCase() === 'AM' && hours === '12') {
-                totalMinutes -= 12 * 60;
+            const timeRegex = /^([1-9]|1[0-2]):([0-5][0-9])$/;
+            if (!timeRegex.test(entryTime)) {
+                resultDiv.innerHTML = "Enter a valid time (e.g., 9:00)";
+                return;
             }
 
-            const calculateLeavingTime = (extraMinutes) => {
-                let leavingMinutes = totalMinutes + 8 * 60 + extraMinutes;
-                leavingMinutes = (leavingMinutes + 1440) % 1440;
+            let [hours, minutes] = entryTime.split(":").map(Number);
+            if (period === "PM" && hours !== 12) hours += 12;
+            if (period === "AM" && hours === 12) hours = 0;
 
-                const hoursOut = Math.floor(leavingMinutes / 60);
-                const minsOut = leavingMinutes % 60;
-                const periodOut = hoursOut >= 12 ? 'PM' : 'AM';
-                let displayHours = hoursOut % 12 || 12;
+            let totalMinutes = hours * 60 + minutes;
 
-                return formatTime(displayHours, minsOut, periodOut);
-            };
+            const times = [
+                totalMinutes + 8 * 60 + 20,
+                totalMinutes + 8 * 60 + 30,
+                totalMinutes + 8 * 60 + 40
+            ];
 
-            document.getElementById('result1').textContent = calculateLeavingTime(20);
-            document.getElementById('result2').textContent = calculateLeavingTime(30);
-            document.getElementById('result3').textContent = calculateLeavingTime(40);
+            let resultHTML = "";
+            times.forEach(time => {
+                let leaveHours = Math.floor(time / 60) % 24;
+                let leaveMinutes = time % 60;
+                let leavePeriod = leaveHours >= 12 ? "PM" : "AM";
+                if (leaveHours === 0) leaveHours = 12;
+                else if (leaveHours > 12) leaveHours -= 12;
+                resultHTML += `<div>${leaveHours}:${leaveMinutes < 10 ? "0" + leaveMinutes : leaveMinutes} ${leavePeriod}</div>`;
+            });
 
-            results.style.display = 'block';
+            resultDiv.innerHTML = resultHTML;
         }
-
-        // Auto-calculate on input with debounce
-        let timeout;
-        entryTime.addEventListener('input', () => {
-            clearTimeout(timeout);
-            timeout = setTimeout(calculateTimes, 300);
-        });
-
-        // Mobile keyboard optimization
-        entryTime.addEventListener('focus', () => {
-            window.scrollTo(0, 0);
-            document.body.scrollTop = 0;
-        });
     </script>
 </body>
 
